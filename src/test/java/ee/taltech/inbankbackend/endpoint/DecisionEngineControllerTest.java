@@ -1,5 +1,3 @@
-package ee.taltech.inbankbackend.endpoint;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.taltech.inbankbackend.exceptions.InvalidLoanAmountException;
 import ee.taltech.inbankbackend.exceptions.InvalidLoanPeriodException;
@@ -7,6 +5,8 @@ import ee.taltech.inbankbackend.exceptions.InvalidPersonalCodeException;
 import ee.taltech.inbankbackend.exceptions.NoValidLoanException;
 import ee.taltech.inbankbackend.service.Decision;
 import ee.taltech.inbankbackend.service.DecisionEngine;
+import ee.taltech.inbankbackend.endpoint.DecisionRequest;
+import ee.taltech.inbankbackend.endpoint.DecisionResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
+import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -27,15 +27,11 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * This class holds integration tests for the DecisionEngineController endpoint.
- */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
 public class DecisionEngineControllerTest {
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -49,13 +45,9 @@ public class DecisionEngineControllerTest {
         objectMapper = new ObjectMapper();
     }
 
-    /**
-     * This method tests the /loan/decision endpoint with valid inputs.
-     */
     @Test
     public void givenValidRequest_whenRequestDecision_thenReturnsExpectedResponse()
-            throws Exception, InvalidLoanPeriodException, NoValidLoanException, InvalidPersonalCodeException,
-            InvalidLoanAmountException {
+            throws Exception, InvalidLoanAmountException, InvalidLoanPeriodException, InvalidPersonalCodeException, NoValidLoanException {
         Decision decision = new Decision(1000, 12, null);
         when(decisionEngine.calculateApprovedLoan(anyString(), anyLong(), anyInt())).thenReturn(decision);
 
@@ -83,8 +75,7 @@ public class DecisionEngineControllerTest {
      */
     @Test
     public void givenInvalidPersonalCode_whenRequestDecision_thenReturnsBadRequest()
-            throws Exception, InvalidLoanPeriodException, NoValidLoanException, InvalidPersonalCodeException,
-            InvalidLoanAmountException {
+            throws Exception, InvalidLoanPeriodException, NoValidLoanException, InvalidPersonalCodeException, InvalidLoanAmountException {
         when(decisionEngine.calculateApprovedLoan(anyString(), anyLong(), anyInt()))
                 .thenThrow(new InvalidPersonalCodeException("Invalid personal code"));
 
